@@ -1,0 +1,411 @@
+---
+title: "How do Educational Level and Gender Difference Affect Individual's Income"
+author: "Yutong Wu, Yao He, Yujie Wu: 1003968904, Xinxuan Lin: 1002467877"
+date: "October 19, 2020"
+output:
+  html_document: null
+  pdf_document: default
+  word_document: default
+  df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Abstract
+
+Finding a job or pursing a higher educational level after graduation from high school, college or university is an essential concern that young people care about. In this report, we will investigate the relationship between educational condition and income based on the 2017 General Social Data Family conducted by Statistics Canada. Furthermore, how gender difference influences one's income under the same educational background will be included in our discussion as well. Since we filtered the sample group in Ontario area, the conclusion is especially aiming for Ontario people. Our founds displayed a positive relationship between education and income and it also suggest that gender pay gap for women does exist in Canada. 
+
+## Introduction
+While nowadays teenagers tend to feel uncertain about their future, income seems to temporarily be a decent short-period target and foundations to achieve their lifelong goals. Our General social survey Family 2017 contains personal information of each family unit that was selected from most province(strata) in Canada. By filtering the observation data, we found that Ontario area has the most sample of family that offered the least NA information. So we determined to study the group of respondents in Ontario who's 15 years old and above to explore our topic:"How do Educational Level and Gender Difference Affect Individual's Income".
+
+We first plot figure 1 box plot to visualize the frequency of each education level and income in different genders. It is clearly that the amount of individuals who graduated from university approximately doubles the the amount of individuals who gets a degree higher than bachelor regardless of gender. While the majority of male's highest educational level was trade certificate, getting a high school diploma is the most common phenomenon among female. The figures 2-9 in appendix A suggests that women trends to earn less them men in general. The logistic regression model we will introduce in detail also implied the same conclusion. However, what led to this gender pay gap? Discrimination, differences in hours worked or differences in years of experience? We have no clue based on the data we are given. So a further investigation of the working condition of males and females is worthy attempting. 
+
+
+
+## Data
+**About Gss ** <br />
+The data (General social survey on Family (cycle 31), 2017 (i.e. gss.csv)) was provided by Statistic Canada. It contains personal information of each family unit that was selected from each strata in order to update people's understanding of families in Canada.<br />
+
+**Methodology** <br />
+***Target Population***<br />
+The target population for "gss.csv" were all people who are older than 15 years old in Canada, but not including people who lived in Yukon, Northwest Territories, and Nunavut; and full-time residents of institutions.(statistic Canada, 2020, p.11)<br />
+
+***Frame*** <br />
+The survey frame in this dataset is the combination of the list of telephone number in use and the address registered within provinces. <br />
+The telephone number were linked to associated home address. For the address that linked to multiple telephone numbers, they were reordered by type of the telephone numbers (i.e. landline telephone would be considered as best telephone to reach, and cellphone would be the last).<br />
+Those telephone numbers that were not linked to associated address would also be included on the survey frame.<br />
+
+***Sampling Approach*** <br />
+This dataset(gss.csv) was sampling by using stratified sampling method; samples were divided into strata based on the geographic area, in total 27 strata. In each strata, samples were collected by using method of simple random sample without replacement.<br /> 
+
+***Sample***<br />
+Sample in this dataset were households that have at least one person older than 15 years old in the selected reached households. The target sample size of "gss.csv" was 20,000, but the actual number of observations is 20,602.<br />
+
+***Method of Reaching Sample***<br />
+Data were collected by interviewing these selected family units via Computer assisted telephone interviews.<br />
+All interviews took place from 9:00 a.m. to 9:30 p.m. Mondays to Fridays. If the selected household was inconvenient at the timing of the first call-in interview, they could also reschedule the interview to Saturdays from 10:00 a.m. to 5:00 p.m. and Sundays from 1:00 a.m. to 9:00 p.m..<br />
+To encourage the participation of the household who refused the interview, they would be reached up to two more times to explain the importance of the survey.<br />
+Households who missed the call would be contacted numerous times.<br />
+
+***Date Collected Method***<br />
+**education:**<br />
+The responses of "education" were collected from respondent by using binary questions; for example, press one if the respondent (is attending/attended) trade school or college. Also, collected by asking the types of the highest diploma or certificates they have completed.<br />
+**income_respondent:**<br />
+The income of respondent in "ggs.csv" was derived from respondent income tax files in calendar year 2016. It represents the total income of respondent received in calendar year 2016 before income taxes and deductions.
+The income of respondent who were in 15-year-old would be considered as 0, because his/her tax files could not be linked.<br />
+**sex:**<br />
+The gender of the respondents were derived from the household roaster. The sample contains 9,399 males, and 11,203 females.<br />
+
+**Strength**<br />
+Interviewers made multiple call backs to people who refused to participate the survey, and explain the reasons and importance of the survey which could provide reassurance to them, and encourage them to do the survey.<br />
+Numerous call backs were also made to those people who were not at home, it could provide more chances to those people to participate the survey as the way of increasing the response rate.<br />
+In order to keep the accuracy of the data, instead of only asking once, the survey contains multiple questions related to the same topic as the way to prevent non-thinking answers (i.e respondent randomly select an option without thinking). For example, instead of only asking what intuition that response attended/is attending, the survey also asked them what the highest certificate, diploma or degree that they have completed is. By comparing the answers of these two questions, we could find out the accuracy of responses.<br />
+The income of respondents were derived from their tax file instead of asking them during the interview, which could increase the accuracy and preventing the false or non-response answers from respondents.<br />
+
+**Weakness**<br />
+The survey is a long phone interview which would cause the non-meaningful response. For example, when asking the education level of the respondent, there were 4 unit selected the option "Don't know" which is unrealistic that the person does not know his/her education level. <br />
+
+The length of the the survey could also lower the response rate. The response rate of gss.csv was 52.4%.
+
+Moreover, when asking the education level, the question used "What type of educational institution (are you attending/did you attended)?" followed by some types of institution. But the options for the interviewees are "Yes/No". It is unclear for the respondent to use a binary option to answer an open type questions. It would be better to make the question like "Are you attending/did you attended ..." followed by some types of institution.<br />
+
+
+**Our Data**<br />
+We were interested in the relationship between education level and income. 
+Therefore, our data was collected by drawing out the columns of "Education", "Income_Respondent", and column of "Sex" from the dataset "gss.csv". In order to better determine the relationship in education level and income, we eliminated the non-response answer from "education" column. <br />
+
+However, due to the difference between consumer price in different cities, we focus on information that provided by respondents who lived in Ontario instead of all individuals. So we used responses from Ontario respondents to form a new dataset called *"processed_data"*. Hence, it would not be able to represent all province in Canada. <br />
+
+Since "income_respondent" was recorded as an interval, and it is impossible to find the actual amount of income that each respondents have. Therefore, we treated the mid-point of each interval as the actual value of income for each respondent in that category. As drawbacks, it caused the bias of income, because it is unrealistic that respondents who are in the same category have same amount of income. <br />
+<br />
+**Population:** All people in Ontario who are in/older than 15 years old.<br />
+**Frame:** The list telephone number in use, and the list of address registered in Ontario.<br />
+**Sample:** Households that have at least one person older than 15 years old in the selected reached Ontario households.<br />
+
+
+**Variable**<br />
+$\cdot$**Education**:<br /> 
+Excluding the non-response answers, we have seven different categories for education level, which were:<br />
+1. "Less than high school diploma or its equivalent";<br />
+2. "High school diploma or a high school equivalency certificate";<br />
+3. "Trade certificate or diploma";<br />
+4. "College, CEGEP or other non-university certificate";<br />
+5. "University certificate, diploma or degree above the bachelor's level";<br />
+6. "University certificate, diploma or degree below the bachelor's level";<br />
+7. "Bachelor's degree (e.g. B.A., B.Sc., LL.B.)<br />
+$\cdot$**Income_Respondent**: <br />
+The income of respondent in this datatset(gss.csv) were the total income of respondent received in calendar year 2016 before income tax and deductions.<br />
+$\cdot$**Sex**:<br />
+sex in "gss.csv" were considered as two different genders: male and female. The sample in our data ("processed_data") contains 2,489 males and 3042 females. <br />
+
+Below is the bar graphs showing the frequency between each education level and income in different genders:
+```{r,echo=FALSE, message=FALSE}
+#insert bar graphs of male and female
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
+library(interactions)
+
+#read data
+data <- read.csv(file.path("gss.csv"))
+
+#select desired columns
+processed_data <- data %>%
+  filter(province == "Ontario") %>%
+  filter(!is.na(income_respondent)) %>%
+  filter(!is.na(education)) %>%
+  select(education, income_respondent, sex)
+
+#preprocess data (income: categorical->numerical)
+processed_data$income_respondent[processed_data$income_respondent == "Less than $25,000"] <- 12500
+processed_data$income_respondent[processed_data$income_respondent == "$25,000 to $49,999"] <- 37500
+processed_data$income_respondent[processed_data$income_respondent == "$50,000 to $74,999"] <- 62500
+processed_data$income_respondent[processed_data$income_respondent == "$75,000 to $99,999"] <- 87500
+processed_data$income_respondent[processed_data$income_respondent == "$100,000 to $ 124,999"] <- 112500
+processed_data$income_respondent[processed_data$income_respondent == "$125,000 and more"] <- 137500
+
+processed_data$education[processed_data$education == "Less than high school diploma or its equivalent"] <- 1
+processed_data$education[processed_data$education == "High school diploma or a high school equivalency certificate"] <- 2
+processed_data$education[processed_data$education == "College, CEGEP or other non-university certificate or di..."] <- 3
+processed_data$education[processed_data$education == "Trade certificate or diploma"] <- 4
+processed_data$education[processed_data$education == "University certificate or diploma below the bachelor's level"] <- 5
+processed_data$education[processed_data$education == "Bachelor's degree (e.g. B.A., B.Sc., LL.B.)"] <- 6
+processed_data$education[processed_data$education == "University certificate, diploma or degree above the bach..."] <- 7
+
+processed_data$income_respondent <- as.numeric(processed_data$income_respondent)
+
+# select male and female sub sets
+male <- processed_data %>%
+  filter(sex == "Male")
+
+female <- processed_data %>%
+  filter(sex == "Female")
+
+#plot
+male$income_respondent <- as.factor(male$income_respondent)
+p1 <- ggplot(male, 
+             aes(x = education,
+                 fill=income_respondent)) + geom_bar(position = "stack") +
+  xlab("figure 1. male") + coord_cartesian(ylim=c(0,900))
+female$income_respondent <- as.factor(female$income_respondent)
+p2 <- ggplot(female, 
+             aes(x = education,
+                 fill=income_respondent)) + geom_bar(position = "stack") +
+  xlab("figure 1. female") + coord_cartesian(ylim=c(0,900))
+
+p1
+p2
+
+```
+<br />
+1: "Less than high school diploma or its equivalent"<br />
+2: "High school diploma or a high school equivalency certificate"<br />
+3: "College, CEGEP or other non-university certificate or di..."<br />
+4: "Trade certificate or diploma"<br />
+5: "University certificate or diploma below the bachelor's level"<br />
+6: "Bachelor's degree (e.g. B.A., B.Sc., LL.B.)"<br />
+7: "University certificate, diploma or degree above the bach..."<br />
+
+## Model
+
+As mentioned above, in order to determine the relationship between education level and income, we used "education", "income_respondent"; and because it included male and female respondents, we also include the column of gender. Since income was collected as interval, we used mid-point of interval as the actual amount of income which turned income as numeric data. In other words, we have numerical response variable and binary predict variables. <br />
+
+Based on figure 3 to figure 9 (figures in Results and Discussion), we could see that all education categories have more females than males except in Trade School category, however in each category the number of male respondent who has highest income were more than the number of female respondent who has highest income. Therefore, gender could affect the relationship between education level to income.<br />
+
+Therefore, it is appropriate to use multiple linear regression for our data.<br />
+
+Our hypothesis is the higher the education level is, the higher the income would be, and gender would affect the relationship between education level and income.<br />
+
+
+The model is: <br />
+$$Income_{respondent} = \beta_0 + \beta_1  Xc +\beta_2 X_h + \beta_3 X_{lh}+\beta_4 X_t +\beta_5 X_{ub} +$$
+$$\beta_6 X_{ua} + \beta_7 X_m + \beta_8 X_c X_m + \beta_9 X_h X_m +\beta_{10} X_{lh} X_m +\beta_{11} X_tX_m$$ $$+\beta_{12} X_{ub} X_m + \beta_{13} X_{ua} X_m + \epsilon_i$$
+
+$Income_{respondent}$ represents the total income (before income tax and deductions) that the respondent received in calendar year 2016. 
+
+$X_{lh}$: vector of respondent whose education level is less than high school diploma or its equivalent.<br />
+$X_h$: vector of respondent whose education level is high school diploma or a high school equivalency certificate.<br />
+$X_t$: vector of respondent whose education level is Trade certificate or diploma.<br />
+$X_c$: vector of respondent whose education level is college, CEGEP or other non-university certificate.<br />
+$X_{ua}$: vector of respondent whose education level is university certificate, diploma or degree below bachelor's level.<br />
+$X_{ub}$: vector of respondent whose education level is university certificate, diploma or degree below bachelor's level.<br />
+$X_m$: respondent who was indicated as male in column of sex.<br />
+
+When all X values were zero, this model shows the average income for female respondent who has bachelor's degree, which is same as what $beta_0$ represents to.
+$\beta_0$ represents the average income of female respondent who has Bachelor's degree.<br />
+<br />
+$\beta_1$ to $\beta_6$ represents the relationship between income and corresponding education level.<br />
+If $\beta_i$ is negative, it means that income is inversely proportional to the corresponding education level.<br />
+Positive $\beta_i$ represents that income is proportional to corresponding education level. <br />
+<br />
+$\beta_7$ shows the relationship between gender and income.<br />
+Negative $\beta_7$ means that male has negative effect on income.<br />
+Conversely,  positive $\beta_7$ indicates male has positive effect on income.<br />
+<br />
+$\beta_8$ to $\beta_{13}$ represents the interaction effect between education level and gender. <br />
+Negative $\beta_j$, where $j$ is between 8 to 13, represents that male and corresponding education level have negative effect on income.<br />
+Conversely, a positive $\beta_j$ indicates that male and corresponding education level have positive effect on income.<br />
+<br />
+
+$\epsilon_i$ indicated as the error term in the model.  
+
+```{r, echo=FALSE, warning=FALSE}
+#SLM
+model <- lm(income_respondent~education*sex, data=processed_data)
+table <- broom::tidy(model)
+knitr::kable(table)
+```
+
+We used R to simulate the model of the relationship between education level and income; we got the above summary table.<br />
+Based on this summary table, we could get the estimated model as followed:<br />
+
+$$\widehat{Income_{respondent}} = 56549.401 -14180.043\cdot X_{c}-24144.043\cdot X_h -34119.824\cdot X_{lh}-19049.401\cdot X_t -4161.761\cdot X_{ub} +$$
+$$10849.734\cdot X_{ua} + 13582.693\cdot X_m + 13582.693\cdot X_c \cdot X_m -2349.867 \cdot X_h \cdot X_m -3348.336 \cdot X_{lh} \cdot X_m +5071.153 \cdot X_t \cdot X_m$$ 
+$$- 3470.333 \cdot X_{ub} \cdot X_m -3865.215 \cdot X_{ua}\cdot X_m $$<br />
+
+**Interpretation:**<br />
+$X$ is the dummy variable which means the value of X would be 1 if respondent fell into the corresponding categories, otherwise the value of X would be 0. <br />
+For example, if the respondent is male and has high school diploma or a high school equivalency certificate, then $X_h = 1$, $X_m = 1$, and other variables of X would be 0； Otherwise the value of $X_h$, and $X_m$ would be 0, and the associated X variable would be 1. By substituting these values, we could get the estimated number for average income of this respondent.  <br />
+From this model, we could see that the coefficient of $X_lh$ (i.e. respondent whose education level was less than high school) is -34119.824 which is also the smallest number among all the coefficient. It shows that education level which less than high school has the largest negative effect on income of respondent.<br />
+The coefficient associated with $X_m$ is 13582.693, which shows that male has positive effect on income.<br />
+More details would be explain in Results and Discussion section. 
+
+**Caveats**<br />
+As mentioned in Data section, income was collected as the mid-point of the interval due to the difficulty in determining the actual number, which would result people who were in the same category all have the same amount of income. It would affect the accuracy of income estimation; and also could cause the low $R^2$ value, and hence affect the accuracy of the model.
+
+
+
+
+## Results and Discussion
+```{r,echo=FALSE, include=TRUE}
+# insert 7 bar graphs
+high_school <- processed_data %>%
+  filter(education==2) %>%
+  select(income_respondent, sex)
+
+trade <- processed_data %>%
+  filter(education==4) %>%
+  select(income_respondent, sex)
+
+bachelor <- processed_data %>%
+  filter(education==6) %>%
+  select(income_respondent, sex)
+
+college <- processed_data %>%
+  filter(education==3) %>%
+  select(income_respondent, sex)
+
+less_than_high <- processed_data %>%
+  filter(education==1) %>%
+  select(income_respondent, sex)
+
+uni_below <- processed_data %>%
+  filter(education==5) %>%
+  select(income_respondent, sex)
+
+uni_above <- processed_data %>%
+  filter(education==7) %>%
+  select(income_respondent, sex)
+
+high_school$income_respondent <- as.factor(high_school$income_respondent)
+p1 <- ggplot(high_school, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 3.") + coord_cartesian(ylim=c(0,900))
+
+trade$income_respondent <- as.factor(trade$income_respondent)
+p2 <- ggplot(trade, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 4.") + coord_cartesian(ylim=c(0,250))
+
+bachelor$income_respondent <- as.factor(bachelor$income_respondent)
+p3 <- ggplot(bachelor, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 5.") + coord_cartesian(ylim=c(0,900))
+
+college$income_respondent <- as.factor(college$income_respondent)
+p4 <- ggplot(college, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 6.") + coord_cartesian(ylim=c(0,900))
+
+less_than_high$income_respondent <- as.factor(less_than_high$income_respondent)
+p5 <- ggplot(less_than_high, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 7.") + coord_cartesian(ylim=c(0,900))
+
+uni_below$income_respondent <- as.factor(uni_below$income_respondent)
+p6 <- ggplot(uni_below, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 8.") + coord_cartesian(ylim=c(0,250))
+
+uni_above$income_respondent <- as.factor(uni_above$income_respondent)
+p7 <- ggplot(uni_above, 
+             aes(x = sex,
+                 fill=income_respondent)) +
+  geom_bar(position = "stack") + scale_x_discrete(guide = guide_axis(n.dodge=6)) +
+  xlab("figure 9.") + coord_cartesian(ylim=c(0,900))
+
+grid.arrange(p1, p2, ncol=2)
+grid.arrange(p3, p4, ncol=2)
+```
+
+```{r, echo=FALSE, include=TRUE}
+grid.arrange(p5, p6, ncol=2)
+grid.arrange(p7, ncol=2)
+```
+
+<br />
+figure 3. High school diploma or a high school equivalency certificate<br />
+figure 4. Trade certificate or diploma<br />
+figure 5. Bachelor's degree (e.g. B.A., B.Sc., LL.B.)<br />
+figure 6. College, CEGEP or other non-university certificate or di...<br />
+figure 7. Less than high school diploma or its equivalent<br />
+figure 8. University certificate or diploma below the bachelor's level <br />
+figure 9. University certificate, diploma or degree above the bach...<br />
+<br />
+
+The bar graphs illustrate the count of the respondents with different incomes, grouped by their education and degrees. The majority of the groups (shown in figure 3 and 5 to 9) are the groups where female respondents are more than male respondents while figure 2 is the only group where male respondents are more. If we put the respondents with income from 12500 to 62500 into the low income group and the respondents with income from 87500 to 137500 into the high income group, it is clearly shown in figure 1 to 7 that there are (slightly) more counts of males in the high income group than females with the same degree based on our data. Again, this is another illustration of the gender discrimination in careers. <br />
+
+```{r}
+#box plots
+male <- processed_data %>%
+  filter(sex == "Male")
+
+female <- processed_data %>%
+  filter(sex == "Female")
+
+boxplot(income_respondent~education, data = male, sub="Figure 10:Male")
+boxplot(income_respondent~education, data = female, sub="Figure 11:Female")
+```
+
+1: "Less than high school diploma or its equivalent"<br />
+2: "High school diploma or a high school equivalency certificate"<br />
+3: "College, CEGEP or other non-university certificate or di..."<br />
+4: "Trade certificate or diploma"<br />
+5: "University certificate or diploma below the bachelor's level"<br />
+6: "Bachelor's degree (e.g. B.A., B.Sc., LL.B.)"<br />
+7: "University certificate, diploma or degree above the bach..."<br />
+
+
+The box plots illustrates the income for males and females by their degrees, with the first column being the lowest degree and the seventh column being the highest degree. We may see from figure 10, that as the degree of the male respondent goes up, the average income goes up as well. For respondents with college certificates and above, the average income of these groups are around 60,000. Another thing worth mentioning here is that each group tends to be distributed wider. In the group 1: Less than high school diploma or its equivalent and the group 4: Trade certificate or diploma, there are 3 and 2 outliers respectively. These respondents earn a incredibly high income than the average of other respondents in their group. This might be due to personal ability of these respondents. From figure 11, we may also see that as the degree of the female respondents increase, the average income goes up as well. However, compared to male respondents, female respondents with degrees of bachelor and above may have an average income of 60,000. For the groups of college certificate, trade certificate and university certificate, female respondents on average earn 20,000 less than male respondents. In the group 1: Less than high school diploma or its equivalent, the group 2: High school diploma or a high school equivalency certificate, and the group 5: University certificate or diploma below the bachelor's level, there are 1, 3, and 2 outliers respectively. These respondents earn a incredibly high income than the average of other respondents in their group. This might also be due to personal ability of these respondents. In conclusion, from the boxplots, we may see the increase trend of degree's effect on income. Another thing worth mentioning here is the gender discrimination shown through the income data. We may discuss more in the linear regression model.
+
+
+For simplicity, let's interpret $\beta_0$ to $\beta_6$ under the scenario when $X_m = 0$. That is, assuming the respondent is a female.
+
+As we may see from the summarizing table, when all X values were 0, the value of $\beta_0$ is $56549$.This represents the average income of female respondent who has Bachelor's degree or above is $56549$. The p-value for $\beta_0 < 0.05$, hence we have a strong evidence that the average income of female respondent who has Bachelor's degree is not 0 and supports our result. <br />
+
+
+$\beta_1$ to $\beta_5$ are negative, meaning that as the degree of the female respondent decreases, the average income tend to decrease. The p-value for female respondents who has a University certificate or diploma below the bachelor's level is greater than $0.05$ while p-values for the other four groups of respondents are less than $0.05$. We have a strong evidence that the average income of female respondent who has degrees that is below Bachelor's degree (except respondents who has a University certificate or diploma below the bachelor's level) is not 0 and supports our result. For respondents who has a University certificate or diploma below the bachelor's level, we fail to reject the these respondents tend to on average have a lower income than the respondents with a Bachelor or higher degree. <br />
+
+$\beta_6$ is positive, meaning that the average income for female respondents with a University certificate, diploma or degree above the bachelors level tend to be higher than the average income for female respondents with education above bachelors level. The p-value is less than $0.05$. We have a strong evidence against the null hypthesis that the difference between the average income of female respondent who has degrees that is University certificate, diploma or degree above the bachelors level and the average income for female respondents with education above bachelors level is 0 and supports our result. <br />
+
+Another thing worth mentioning here is the extent by which the income increases and decreases as degree changes. As we may read from the summary table, having a degree that is above the bachelor's level increases the income most while the further away the degree is from the bachelor's level, the more decrease in the income. <br />
+
+In general, we may find that as a respondent's degree go above the bachelor's degree, the average income of the respondent tend to increase. This may be caused by the case that as the respondents pursue higher degrees, they learn more useful skills and knowledge, experienced more in the industries, and therefore may bring more value to the companies. Assuming income reflects the value created by the respondents, it is reasonable that as a respondent's degree go above the bachelor's degree, the average income of the respondent tend to increase. One exemption is the group of a University certificate or diploma below the bachelor's level. One possible explanation for that is these respondents might be awarded certificates for their hard skills and apprenticeships. With that being said, their skills may not require lots of theoretical knowledge and experiences matter more. <br />
+
+<br />
+$\beta_7$ is 13583, which means that on avergae, a male with a bachelor or higher degree has a higher income than a female with a bachelor or higher degree. The p-value < 0.05. This indicates that there is strong evidence against the null hypothesis that there is no difference between males and females of the same degree, meaning on average, males earn more than females with same degrees. One explanation is that gender discrimination, shown through income differences, occurs in the careers. <br />
+
+
+
+$\beta_8$ to $\beta_{13}$ represents the interaction effect between education level and gender. That is, for male respondents, that's an additonal effect of degree on their income other than the mere effect of $\beta_1$ to $\beta_6$ have on females and the effect of being a male, which is shown through $\beta_7$. In this case, college certificate and trade certificate have an additional positive effects on males' income, while the other degrees have an extra negative effects on males' income. For example, if a respondent is a male with a trade certificate, then his predicted income will be 56549 + (-19049) + 13583 + 5071 = 56154. While for a female respondent with a trade certificate, her predicted income will be 56549 + (-19049) = 37500. However, the p-value for all the interaction terms are greater than 0.05, which means there is no evidence against the hypothesis that there is no additional effect on a male's income with respect to his degree. With that being said, effect of degrees are the same for both males and females. <br />
+
+The overall $R^2$ for the model is 0.18, which means that there is a weak positive correlation between the variables. 
+
+
+Our study is to investigate the effect that degrees and genders may have on people's income. From our analysis, we may see that degrees do have a positive effect on people's income. That is, the higher a person's degree is, the higher his income would be. In addition, we also find that males tend to have a higher income on average than females. This is an illustration of gender discrimination that occurs in the real life. In the past, women may not have so many opportunities to study and to work. And there might be the sterotype that men work more and are smarter in some aspects. However, with the development of the society, the awareness of gender equality does arise and females are recognized, although on average females are still at the disadvantages. Our study may bring people's attention towards education and the gender equality. Hopefully in the future, citizens will have higher education level and the gender discrimination may disappear.
+
+
+# Weaknesses and Next Steps
+
+Although we are able to analyze and draw conclusions from the data, there are still drawbacks in our dataset that reduces the accuracy of our model. Firstly, the most important weakness we encountered is that the income data was collected as a interval rather than a number. In order to model our data, everyone in the same income division will share the same amount of income, which is unrealistic. For instance, some teenager respondents aged 15 to 18 may have not started earning money, yet their income was automatically recorded as $12500 annually since they answered "less than 25000" when doing the original questionnaire. To improve the accuracy, a smaller interval or even better, a precise amount of income number is expected to be collected for our education and income relationship assessment. \newline
+
+Another weakness in this study was that family background of the respondents might be an interesting factor that causes outliers in the high income groups. For example, a person with a wealthy farm parents do not need to purse a higher degree to manage his(her) parent's business, though he(she) could still make lots of money by taking over the elder's farm. Although it may look like an outlier in the overall data set, it is a statistically possible exception that could happpen in the real life. Therefore, for a futural steps, we can construct an another survey asking about the occupation of the interviewers' family and develop another variable to explore the potential reason hidden behind the outliers.\newline
+
+After seeing the gender pay gap for women, it is hard to conclude that gender wage gap is simply gender discrimination. So it would be interesting to do a further study on "Why in general women earns less than men?" or "A Comparison of The Obstacle that men and women are facing in the same occupation".
+
+
+## References
+
+1. Statistics Canada. (2017). General social survey on Family (cycle 31), 2017 - Canadian general social surveys (GSS). Retrieved October 19, 2020, from https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/sdaweb/html/gss.htm
+
+2. Statistics Canada. (2020, April). General Social Survey Cycle 31 : Families Public Use Microdata File Documentation and User’s Guide (Rep.). Retrieved 2020, from https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/sdaweb/dli2/gss/gss31/gss31/more_doc/GSS31_User_Guide.pdf
+
+3. N/A. (2017). 2017 General Social Survey: Families Cycle 31 Public Use Microdata File PUMF (Rep.). Retrieved October 19, 2020, from Statistics Canada website: https://sda-artsci-utoronto-ca.myaccess.library.utoronto.ca/sdaweb/dli2/gss/gss31/gss31/more_doc/GSS31_Codebook.pdf
+
+4. Alexander, R., & Caetano, S. (2020, October 7). Gss_cleaning.R. Retrieved October 19, 2020.
+
+5. Robin Bleiweis. Quick Facts About the Gender Wage Gap. Retrieved 2020, from Center for American Progress: https://www.americanprogress.org/issues/women/reports/2020/03/24/482141/quick-facts-gender-wage-gap/
